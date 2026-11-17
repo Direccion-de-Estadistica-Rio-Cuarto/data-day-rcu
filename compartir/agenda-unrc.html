@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  @font-face { font-family: "Panton"; src: url("../fonts/panton-full/Panton-LightCaps.otf") format("opentype"); font-weight: 100 500; }
+  @font-face { font-family: "Panton"; src: url("../fonts/panton-bold/Panton%20Bold/Panton%20Bold.ttf") format("truetype"); font-weight: 600 900; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { width: 1200px; background: #fff; font-family: "Outfit", "Segoe UI", sans-serif; color: #0b2547; }
+  .sheet { margin: 0; background: #fff; }
+  header {
+    padding: 48px 56px 40px; color: #fff;
+    background: linear-gradient(135deg, #0d3f8a 0%, #1e6fd9 60%, #7a8ff0 100%);
+  }
+  .eyebrow { font-family: "Panton"; font-weight: 600; letter-spacing: .16em; font-size: 15px; text-transform: uppercase; opacity: .85; }
+  h1 { font-family: "Panton"; font-size: 64px; line-height: .95; margin-top: 14px; letter-spacing: -.01em; }
+  h1 span { font-weight: 300; } h1 strong { font-weight: 600; }
+  .lema { font-family: "Panton"; font-weight: 300; font-size: 24px; letter-spacing: .02em; margin-top: 10px; text-transform: uppercase; }
+  .sub { font-family: "Panton"; text-transform: uppercase; font-size: 16px; letter-spacing: .04em; margin-top: 22px; line-height: 1.35; }
+  .sub b { font-weight: 600; display: block; }
+  .meta { display: flex; gap: 28px; flex-wrap: wrap; margin-top: 24px; font-size: 17px; font-weight: 500; }
+  .meta span { display: flex; align-items: center; gap: 8px; }
+  .meta svg { width: 18px; height: 18px; stroke: #fff; }
+  main { padding: 36px 56px 30px; }
+  h2 { font-family: "Panton"; font-weight: 600; font-size: 26px; text-transform: uppercase; margin-bottom: 18px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 16px; }
+  th { font-family: "Panton"; font-weight: 600; text-transform: uppercase; letter-spacing: .08em; font-size: 13px; color: #5a6f8c; text-align: left; padding: 0 16px 12px; border-bottom: 2px solid #1e6fd9; }
+  td { padding: 16px; vertical-align: top; border-bottom: 1px solid #d7e6f5; line-height: 1.4; }
+  td.time { font-family: "Panton"; font-weight: 600; color: #1e6fd9; font-size: 18px; white-space: nowrap; width: 170px; }
+  td.act { width: 470px; }
+  .title { font-family: "Panton"; font-weight: 600; text-transform: uppercase; font-size: 16px; line-height: 1.25; }
+  .tag { display: inline-block; margin-top: 6px; font-family: "Panton"; font-weight: 600; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 3px 9px; border-radius: 999px; background: #e7f0fc; color: #1e6fd9; }
+  .tag.pending { background: #fff3df; color: #a35a00; }
+  .org { font-weight: 600; }
+  .people { color: #5a6f8c; font-size: 14.5px; margin-top: 3px; }
+  .muted { color: #5a6f8c; }
+  tr.focus td { background: #eaf3ff; }
+  tr.focus td:first-child { box-shadow: inset 5px 0 0 #1e6fd9; }
+  .note { margin-top: 22px; font-size: 14px; color: #5a6f8c; }
+  footer { padding: 20px 56px 26px; border-top: 1px solid #d7e6f5; display: flex; justify-content: space-between; font-size: 14px; color: #5a6f8c; }
+  footer b { color: #0b2547; font-weight: 600; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <header>
+    <div class="eyebrow">Agenda del evento</div>
+    <h1><span>GESTIONAR</span> <strong>CON DATOS</strong></h1>
+    <div class="lema">De la intuición a la evidencia</div>
+    <div class="sub">Jornada provincial de<b>Transparencia y gestión basada en evidencia</b></div>
+    <div class="meta">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>Jueves 3 de diciembre de 2026</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>08:30 a 14:30 hs</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Polo Científico Tecnológico · Andrés Dadone 875, Río Cuarto</span>
+    </div>
+  </header>
+  <main>
+    <h2>Programa de la jornada</h2>
+    <table>
+      <thead><tr><th>Horario</th><th>Actividad</th><th>A cargo de</th></tr></thead>
+      <tbody>
+        <tr><td class="time">08:30</td><td class="act"><div class="title">Acreditación</div></td><td class="muted">—</td></tr>
+        <tr><td class="time">09:00 – 09:15</td><td class="act"><div class="title">Apertura</div><span class="tag">15 min</span></td>
+          <td><div class="org">Guillermo De Rivas</div><div class="people">Intendente de la Ciudad de Río Cuarto</div><div class="org" style="margin-top:6px">Manuel Calvo</div><div class="people">Ministro Jefe de Gabinete de la Provincia de Córdoba</div></td></tr>
+        <tr><td class="time">09:20 – 09:50</td><td class="act"><div class="title">Bloque inicial: «De producir datos a gobernar con evidencia»</div><span class="tag">30 min</span></td>
+          <td><div class="org">Municipalidad de Río Cuarto</div><div class="people">Karin Bogni · Mónica Anelo · Pablo Fabbroni</div></td></tr>
+        <tr><td class="time">10:00 – 10:30</td><td class="act"><div class="title">Bloque 1: «Nuestra historia en datos»</div><span class="tag">30 min</span></td>
+          <td><div class="org">Municipalidad de Luján de Cuyo</div><div class="people">Esteban Allasino, Intendente</div></td></tr>
+        <tr class="focus"><td class="time">10:30 – 11:00</td><td class="act"><div class="title">Bloque 2</div><span class="tag">30 min</span> <span class="tag pending">Título a definir</span></td>
+          <td><div class="org">Universidad Nacional de Río Cuarto</div><div class="people">Ponentes a confirmar</div></td></tr>
+        <tr><td class="time">11:00 – 11:30</td><td class="act"><div class="title">Bloque 3: «De la institucionalización a la evidencia de impacto»</div><span class="tag">30 min</span></td>
+          <td><div class="org">Municipalidad de Jesús María</div><div class="people">Marianela Piazzano · Marcelo Salcedo · Fabiana Adaro</div></td></tr>
+        <tr><td class="time">11:30 – 12:00</td><td class="act"><div class="title">Bloque 4</div><span class="tag">30 min</span> <span class="tag pending">A confirmar</span></td><td class="muted">A confirmar</td></tr>
+        <tr><td class="time">12:00 – 12:30</td><td class="act"><div class="title">Coffee break</div></td><td class="muted">—</td></tr>
+        <tr><td class="time">12:30 – 14:30</td><td class="act"><div class="title">Laboratorio de datos: «Datos e ideas para construir valor público»</div><span class="tag">120 min</span> <span class="tag">Taller participativo</span></td>
+          <td><div class="org">Universidad Provincial de Córdoba</div><div class="people">Coordinación: Dr. Julio Romero</div></td></tr>
+      </tbody>
+    </table>
+    <p class="note">Cada bloque de exposición dura 30 minutos. Agenda sujeta a confirmación de algunos bloques.</p>
+  </main>
+  <footer>
+    <span>Organiza: <b>Dirección de Estadística, Control de Calidad y Procesos</b> · Municipalidad de Río Cuarto</span>
+    <span>Inscripción en Luma</span>
+  </footer>
+</div>
+</body>
+</html>

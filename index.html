@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gestionar con Datos · Río Cuarto 2026</title>
+  <meta name="description" content="Gestionar con Datos, Río Cuarto 2026: Jornada Provincial de Transparencia y Gestión Basada en Evidencia. 3 de diciembre en el Polo Científico Tecnológico de Río Cuarto.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /*
+      Tipografía Panton (Fontfabric): Light Caps (100–500) y Bold (600–900).
+      Light Caps solo tiene mayúsculas y Bold sí tiene minúsculas, por eso se fuerza uppercase en los textos en Panton.
+    */
+    @font-face { font-family: "Panton"; src: url("fonts/panton-full/Panton-LightCaps.otf") format("opentype"); font-weight: 100 500; font-style: normal; font-display: swap; }
+    @font-face { font-family: "Panton"; src: url("fonts/panton-bold/Panton Bold/Panton Bold.ttf") format("truetype"); font-weight: 600 900; font-style: normal; font-display: swap; }
+
+    :root {
+      --sky-top: #3f9be0;
+      --sky-bottom: #8cc8f0;
+      --blue: #1e6fd9;
+      --blue-deep: #0d3f8a;
+      --navy: #0b2547;
+      --lavender: #c7b9f4;
+      --bg: #ffffff;
+      --bg-alt: #f1f7fd;
+      --card: #ffffff;
+      --border: #d7e6f5;
+      --text: #0b2547;
+      --muted: #5a6f8c;
+      --radius: 16px;
+      --max: 1200px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Outfit", system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+    h1, h2, h3 { line-height: 1.05; }
+    /* Panton (solo mayúsculas) para títulos y elementos de interfaz; Outfit para los textos de lectura */
+    h1, h2, h3, .city, .tagline, .btn, .eyebrow, .meta, .countdown, .tag, .stats strong,
+    .slot time, summary, .location dl, .lema, .avatar, .num, .speaker .role { font-family: "Panton", system-ui, sans-serif; text-transform: uppercase; }
+    a { color: inherit; }
+    .container { max-width: var(--max); margin: 0 auto; padding: 0 24px; }
+
+    /* Botones */
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 15px 30px; border-radius: 999px;
+      font-weight: 600; font-size: 1.05rem; letter-spacing: .02em;
+      text-decoration: none; cursor: pointer; border: none;
+      background: #fff; color: var(--blue-deep);
+      box-shadow: 0 10px 30px rgba(13, 63, 138, .25);
+      transition: transform .15s ease, box-shadow .15s ease;
+    }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 14px 36px rgba(13, 63, 138, .35); }
+    .btn-primary { background: var(--blue); color: #fff; }
+    /* El script de Luma aplica su propio estilo a .luma-checkout--button: se fuerza el del sitio */
+    .btn.luma-checkout--button {
+      background: #fff !important; color: var(--blue-deep) !important;
+      padding: 15px 30px !important; border-radius: 999px !important;
+      font-family: "Panton", system-ui, sans-serif !important; font-size: 1.05rem !important; font-weight: 600 !important;
+      line-height: 1.6 !important; border: none !important;
+    }
+    .btn.btn-primary.luma-checkout--button { background: var(--blue) !important; color: #fff !important; }
+    /* Modal de Luma: más alto que el de fábrica (600px) para mostrar el formulario completo */
+    .luma-checkout--modal {
+      width: 520px !important; max-width: calc(100vw - 32px) !important;
+      height: min(880px, calc(100dvh - 96px)) !important; max-height: none !important; overflow: hidden;
+    }
+    .btn-ghost { background: transparent; color: inherit; border: 1.5px solid currentColor; box-shadow: none; }
+    .btn-ghost:hover { background: color-mix(in srgb, currentColor 12%, transparent); box-shadow: none; }
+
+    /* ======================= HERO ======================= */
+    .hero {
+      position: relative; min-height: 100vh; min-height: 100svh;
+      display: flex; flex-direction: column;
+      color: var(--navy); overflow: hidden; transition: color .4s ease;
+      /* Color de fondo mientras cargan los recursos gráficos */
+      background: #efefef;
+    }
+    /* Con el arte cargado, el texto del hero pasa a blanco */
+    .hero.is-loaded { color: #fff; }
+    /* Con el arte cargado, una sombra muy sutil desde atrás separa el texto blanco del fondo */
+    .hero.is-loaded .hero-copy { text-shadow: 0 1px 2px rgba(8, 37, 71, .35), 0 0 14px rgba(8, 37, 71, .2); }
+    .hero.is-loaded .hero-copy .btn:not(.btn-ghost) { text-shadow: none; }
+    .hero.is-loaded .meta svg { filter: drop-shadow(0 1px 1.5px rgba(8, 37, 71, .35)); }
+    /*
+      Fondo del hero en capas (de atrás hacia adelante): cielo → animación → frente (puente y ciudad sin cielo).
+      Las dos imágenes usan el mismo encuadre para quedar alineadas a cualquier tamaño de pantalla.
+    */
+    .hero-media { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+    .hero-media > * { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-layer { object-fit: cover; object-position: center bottom; opacity: 0; transition: opacity .6s ease; }
+    .hero.is-loaded .hero-layer { opacity: 1; }
+    /* Capa intermedia para la animación (entre el cielo y el frente) */
+    .hero-anim { overflow: hidden; }
+    /* Abanico: anclado abajo a la derecha, detrás del puente (proporciones tomadas de la pieza gráfica) */
+    .abanico { position: absolute; left: 56%; bottom: -10.5vw; width: 44vw; height: auto; display: block; }
+    /* Velo sutil a la izquierda para asegurar legibilidad del texto; solo aparece cuando hay arte cargado */
+    .hero.is-loaded::after {
+      content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none;
+      background: linear-gradient(90deg, rgba(20, 80, 160, .25) 0%, rgba(20, 80, 160, 0) 55%);
+    }
+    .hero-inner { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; padding-top: 40px; padding-bottom: 56px; }
+    /* Como en la pieza gráfica: el contenido del hero va alineado a la izquierda, no centrado */
+    .hero .container { max-width: none; margin: 0; padding-left: clamp(24px, 5.7vw, 120px); padding-right: clamp(24px, 5.7vw, 120px); }
+
+    /* Fila de logos institucionales — reemplazar los textos por los logos en SVG/PNG blanco */
+    .partners { display: flex; flex-wrap: wrap; align-items: center; gap: 18px 36px; margin-top: 12px; }
+    .partner { display: flex; align-items: center; min-height: 44px; max-width: 100%; opacity: .95; }
+    /* Logos en PNG blanco: se tiñen de azul oscuro mientras carga el arte y vuelven a blanco después */
+    .partner-logo { display: block; height: var(--h, 40px); width: auto; max-width: 100%; object-fit: contain; object-position: left center;
+      filter: brightness(0) invert(11%) sepia(20%) saturate(4000%) hue-rotate(190deg) brightness(105%); }
+    .hero.is-loaded .partner-logo { filter: drop-shadow(0 1px 2px rgba(8, 37, 71, .3)); }
+    footer .partner-logo { filter: none; }
+    /* El cambio a blanco se hace con un fundido de opacidad: interpolar el filtro genera destellos de color */
+    .hero.is-loaded .partner-logo { animation: logo-in .4s ease both; }
+    @keyframes logo-in { from { opacity: 0; } to { opacity: 1; } }
+
+    .hero-copy { margin-top: auto; margin-bottom: auto; padding: 56px 0 24px; max-width: 640px; }
+    .hero h1 {
+      font-weight: 600; letter-spacing: -.01em;
+      font-size: clamp(3.6rem, 10vw, 7.5rem); line-height: .95;
+    }
+    .hero h1 span { font-weight: 300; }
+    .hero h1 strong { font-weight: 600; }
+    /* Lema: mismo ancho que "CON DATOS" (el tamaño exacto lo ajusta fitLema en el script) */
+    .hero .lema { display: block; width: max-content; max-width: none; white-space: nowrap; font-weight: 300; font-size: clamp(1rem, 2.4vw, 1.95rem); line-height: 1; letter-spacing: .02em; margin-top: 14px; margin-bottom: 22px; }
+    .hero .city { font-size: clamp(1.9rem, 4.6vw, 3.4rem); line-height: 1; margin-top: 10px; letter-spacing: -.01em; }
+    .hero .city strong { font-weight: 700; }
+    .hero .city span { font-weight: 300; }
+    .hero .tagline { margin-top: 40px; font-size: clamp(1rem, 1.8vw, 1.35rem); line-height: 1.3; letter-spacing: .03em; text-transform: uppercase; }
+    .hero .tagline span { display: block; font-weight: 300; }
+    .hero .tagline strong { display: block; font-weight: 600; }
+
+    .meta { display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 34px; font-weight: 500; font-size: 1.05rem; }
+    .meta div { display: flex; align-items: center; gap: 8px; }
+    .meta svg { width: 19px; height: 19px; stroke: currentColor; flex-shrink: 0; }
+    .cta-row { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 32px; }
+
+    .countdown { display: flex; gap: 12px; margin-top: 40px; }
+    .countdown div {
+      min-width: 78px; padding: 12px 8px; text-align: center; border-radius: 14px;
+      background: rgba(255, 255, 255, .16); border: 1px solid color-mix(in srgb, currentColor 35%, transparent);
+      backdrop-filter: blur(6px);
+    }
+    .countdown strong { display: block; font-size: 1.9rem; font-weight: 600; line-height: 1.1; }
+    .countdown span { font-size: .72rem; text-transform: uppercase; letter-spacing: .1em; opacity: .9; }
+
+    /* ======================= SECCIONES ======================= */
+    section { padding: 100px 0; }
+    section.alt { background: var(--bg-alt); }
+    .section-head { max-width: 680px; margin-bottom: 52px; }
+    .section-head.center { text-align: center; margin-left: auto; margin-right: auto; }
+    .eyebrow { color: var(--blue); font-weight: 600; font-size: .9rem; letter-spacing: .14em; text-transform: uppercase; }
+    .section-head h2 { font-size: clamp(2.1rem, 4.4vw, 3.1rem); font-weight: 600; margin: 10px 0 16px; letter-spacing: -.01em; }
+    .section-head h2 b { font-weight: 700; color: var(--blue); }
+    .section-head p { color: var(--muted); font-size: 1.12rem; }
+
+    .grid { display: grid; gap: 22px; }
+    .grid-3 { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+    .card {
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+    .card:hover { transform: translateY(-4px); border-color: #b8d3f0; box-shadow: 0 18px 40px rgba(13, 63, 138, .1); }
+    .card .num {
+      width: 46px; height: 46px; border-radius: 12px; display: grid; place-items: center; margin-bottom: 20px;
+      background: linear-gradient(135deg, var(--blue), var(--lavender)); color: #fff; font-weight: 700; font-size: 1.1rem;
+    }
+    .card h3 { font-size: 1.35rem; font-weight: 600; margin-bottom: 8px; }
+    .card p { color: var(--muted); }
+
+    .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 22px; margin-top: 56px; }
+    .stats div { border-left: 3px solid var(--blue); padding-left: 18px; }
+    .stats strong { display: block; font-size: 2.8rem; font-weight: 600; color: var(--blue-deep); line-height: 1.1; }
+    .stats span { color: var(--muted); }
+
+    /* Agenda */
+    .agenda { max-width: 880px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    /* Agenda en carrusel: tarjeta central destacada, vecinas asomando a los costados y flechas.
+       La clase is-carousel la agrega el script; sin JavaScript (o con movimiento reducido) se ve como lista. */
+    .agenda-carousel {
+      --card-w: min(520px, 76%);
+      position: relative; max-width: 1120px; margin: 0 auto; overflow: hidden; padding: 20px 0 28px;
+      /* Las tarjetas laterales se desvanecen hacia los bordes en lugar de cortarse */
+      -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+      mask-image: linear-gradient(90deg, transparent 0, #000 16%, #000 84%, transparent 100%);
+    }
+    .agenda.is-carousel { display: grid; max-width: none; position: relative; }
+    .agenda.is-carousel::before {
+      content: ""; position: absolute; inset: 5% 28%; border-radius: 50%; z-index: 0;
+      background: conic-gradient(from 0deg, rgba(63, 155, 224, .18), rgba(199, 185, 244, .24), rgba(63, 155, 224, .05), rgba(63, 155, 224, .18));
+      filter: blur(40px); animation: halo-spin 18s linear infinite;
+    }
+    /* Tarjetas verticales, todas del mismo alto: hora grande arriba, institución y ponentes al pie */
+    .agenda.is-carousel .slot {
+      grid-area: 1 / 1; justify-self: center; align-self: stretch; width: var(--card-w); position: relative; z-index: 1;
+      display: flex; flex-direction: column; justify-content: center; gap: 14px; padding: 30px 32px;
+      opacity: 0; transform: scale(.7); pointer-events: none;
+      transition: transform .7s cubic-bezier(.2, .7, .2, 1), opacity .7s cubic-bezier(.2, .7, .2, 1), box-shadow .7s ease;
+    }
+    .agenda.is-carousel .slot time { font-size: 2.2rem; line-height: 1; }
+    .agenda.is-carousel .slot > div { display: flex; flex-direction: column; }
+    /* Los bloques con expositor ocupan todo el alto y llevan la institución al pie; los cortos quedan centrados */
+    .agenda.is-carousel .slot:has(.by) { justify-content: flex-start; }
+    .agenda.is-carousel .slot:has(.by) > div { flex: 1; }
+    .agenda.is-carousel .slot h3 { font-size: 1.15rem; line-height: 1.25; margin-bottom: 8px; }
+    .agenda.is-carousel .slot .by { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--border); }
+    .agenda.is-carousel .slot.is-active { z-index: 3; opacity: 1; transform: none; pointer-events: auto; box-shadow: 0 22px 50px rgba(13, 63, 138, .16); }
+    .agenda.is-carousel .slot.is-prev,
+    .agenda.is-carousel .slot.is-next { z-index: 2; opacity: .55; pointer-events: auto; cursor: pointer; }
+    .agenda.is-carousel .slot.is-prev { transform: translateX(-96%) scale(.82); }
+    .agenda.is-carousel .slot.is-next { transform: translateX(96%) scale(.82); }
+    .agenda.is-carousel .slot.is-prev:hover, .agenda.is-carousel .slot.is-next:hover { opacity: .75; }
+    .agenda.is-instant .slot { transition: none; }
+    /* Flechas montadas sobre los bordes de la tarjeta central */
+    .agenda-arrow {
+      position: absolute; top: 50%; z-index: 4; width: 48px; height: 48px; margin-top: -24px; padding: 0;
+      display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border);
+      background: #fff; color: var(--blue); cursor: pointer; box-shadow: 0 6px 18px rgba(13, 63, 138, .12);
+      transition: transform .15s ease, border-color .15s ease;
+    }
+    .agenda-arrow:hover { transform: scale(1.06); border-color: var(--blue); }
+    .agenda-arrow svg { width: 22px; height: 22px; stroke: currentColor; }
+    .agenda-arrow--prev { left: calc(50% - var(--card-w) / 2 - 24px); }
+    .agenda-arrow--next { right: calc(50% - var(--card-w) / 2 - 24px); }
+    .agenda-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 8px; max-width: 880px; margin: 6px auto 0; }
+    .agenda-dots:empty { display: none; }
+    .agenda-dots button {
+      position: relative; overflow: hidden; padding: 7px 12px 9px; border: 1px solid var(--border); border-radius: 10px;
+      background: var(--card); color: var(--muted); cursor: pointer;
+      font-family: "Panton", system-ui, sans-serif; font-weight: 600; font-size: .9rem; letter-spacing: .02em;
+      transition: color .2s ease, border-color .2s ease;
+    }
+    .agenda-dots button:hover { color: var(--blue); border-color: #b8d3f0; }
+    .agenda-dots button.is-active { color: var(--blue); border-color: var(--blue); }
+    .agenda-dots button.is-done { color: var(--text); }
+    .agenda-dots button::after {
+      content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--blue);
+      transform: scaleX(0); transform-origin: left;
+    }
+    .agenda-dots button.is-active::after { animation: reel-progress var(--reel-interval, 7s) linear forwards; }
+    .agenda-dots button.is-done::after { transform: scaleX(1); opacity: .35; }
+    .slot {
+      display: grid; grid-template-columns: 110px 1fr; gap: 24px; align-items: start;
+      background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 22px 26px;
+    }
+    .slot time { font-weight: 700; font-size: 1.2rem; color: var(--blue); }
+    .slot h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: 4px; }
+    .slot p { color: var(--muted); }
+    /* Quién expone en cada bloque */
+    .slot .by { display: flex; align-items: center; gap: 12px; margin-top: 10px; color: var(--text); font-weight: 500; }
+    .tag--pending { background: #fff3df; color: #a35a00; }
+    .slot .speakers { list-style: none; margin-top: 8px; padding-left: 0; display: grid; gap: 2px; color: var(--muted); font-size: .95rem; }
+    .slot .speakers strong { color: var(--text); font-weight: 600; }
+    .tag { display: inline-block; font-size: .74rem; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; padding: 3px 10px; border-radius: 999px; background: #e7f0fc; color: var(--blue); margin-left: 8px; vertical-align: middle; }
+
+    /* Expositores */
+    .speaker { text-align: center; }
+    .avatar {
+      width: 104px; height: 104px; border-radius: 50%; margin: 0 auto 18px;
+      background: linear-gradient(135deg, var(--sky-top), var(--lavender));
+      display: grid; place-items: center; font-size: 1.8rem; font-weight: 600; color: #fff;
+    }
+    .speaker .role { color: var(--blue); font-weight: 600; margin-bottom: 4px; }
+
+    /* Logos de municipios: rotan con un fundido desenfocado sobre un halo que gira lento */
+    .logo-reel { position: relative; height: 104px; margin: 0 auto 18px; display: grid; place-items: center; }
+    .logo-reel::before {
+      content: ""; position: absolute; width: 112px; height: 112px; border-radius: 50%;
+      background: conic-gradient(from 0deg, rgba(63, 155, 224, .22), rgba(199, 185, 244, .28), rgba(63, 155, 224, .06), rgba(63, 155, 224, .22));
+      filter: blur(14px); animation: halo-spin 14s linear infinite;
+    }
+    @keyframes halo-spin { to { transform: rotate(1turn); } }
+    .logo-reel img {
+      position: absolute; max-height: 88px; max-width: 170px; width: auto; height: auto;
+      opacity: 0; transform: translateY(12px) scale(.94); filter: blur(6px);
+      transition: opacity .9s cubic-bezier(.2, .7, .2, 1), transform .9s cubic-bezier(.2, .7, .2, 1), filter .9s cubic-bezier(.2, .7, .2, 1);
+    }
+    .logo-reel img.is-active { opacity: 1; transform: none; filter: none; }
+    .logo-reel img.is-leaving { opacity: 0; transform: translateY(-12px) scale(1.04); filter: blur(6px); }
+    /* Logos apaisados (texto al costado): más ancho y menos alto */
+    .logo-reel--wide img { max-width: 230px; max-height: 60px; }
+    .logo-reel-dots { display: flex; justify-content: center; gap: 6px; margin: -6px 0 18px; }
+    .logo-reel-dots button {
+      position: relative; width: 22px; height: 4px; padding: 0; border: 0; border-radius: 4px;
+      background: var(--border); overflow: hidden; cursor: pointer;
+    }
+    .logo-reel-dots button::after {
+      content: ""; position: absolute; inset: 0; background: var(--blue);
+      transform: scaleX(0); transform-origin: left;
+    }
+    .logo-reel-dots button.is-active::after { animation: reel-progress var(--reel-interval, 3s) linear forwards; }
+    .logo-reel-dots button.is-done::after { transform: scaleX(1); }
+    .is-paused button.is-active::after { animation-play-state: paused; }
+    @keyframes reel-progress { to { transform: scaleX(1); } }
+    /* Sin animaciones: los tres logos quedan fijos, uno al lado del otro */
+    @media (prefers-reduced-motion: reduce) {
+      .logo-reel { display: flex; gap: 14px; justify-content: center; align-items: center; }
+      .logo-reel::before { display: none; }
+      .logo-reel img { position: static; opacity: 1; transform: none; filter: none; max-height: 54px; max-width: 30%; transition: none; }
+      .logo-reel-dots { display: none; }
+    }
+
+    /* Lugar */
+    .location { display: grid; grid-template-columns: 1fr 1.3fr; gap: 28px; align-items: stretch; }
+    .location .card:hover { transform: none; box-shadow: none; }
+    .location iframe { width: 100%; height: 100%; min-height: 320px; border: 0; border-radius: var(--radius); }
+    .location dl dt { color: var(--muted); font-size: .88rem; text-transform: uppercase; letter-spacing: .08em; margin-top: 18px; }
+    .location dl dd { font-weight: 600; font-size: 1.1rem; }
+
+    /* FAQ */
+    .faq { max-width: 800px; margin: 0 auto; }
+    details { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px 24px; margin-bottom: 12px; }
+    summary { cursor: pointer; font-weight: 600; font-size: 1.1rem; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+    summary::-webkit-details-marker { display: none; }
+    summary::after { content: "+"; color: var(--blue); font-size: 1.4rem; line-height: 1; }
+    details[open] summary::after { content: "−"; }
+    details p { color: var(--muted); margin-top: 12px; }
+
+    /* CTA final */
+    .final {
+      text-align: center; color: #fff; border-radius: 28px; padding: 72px 28px;
+      background: linear-gradient(135deg, var(--blue-deep) 0%, var(--blue) 55%, #7a8ff0 100%);
+    }
+    .final h2 { font-size: clamp(2rem, 4.4vw, 3rem); font-weight: 600; margin-bottom: 14px; }
+    .final p { opacity: .9; font-size: 1.15rem; margin-bottom: 30px; }
+
+    footer { background: var(--navy); color: rgba(255, 255, 255, .8); padding: 48px 0; }
+    footer .container { display: flex; flex-wrap: wrap; gap: 24px; justify-content: space-between; align-items: center; }
+    footer .partners { margin: 0; color: #fff; }
+    footer .copy { font-size: .92rem; }
+
+    @media (max-width: 860px) {
+      .location { grid-template-columns: 1fr; }
+      .slot { grid-template-columns: 1fr; gap: 6px; }
+      section { padding: 76px 0; }
+      .partners { gap: 14px 24px; }
+      .partner-logo { height: calc(var(--h, 40px) * .8); }
+      .agenda-carousel { --card-w: 82%; }
+      .agenda.is-carousel .slot { align-self: start; padding: 24px 22px; }
+      /* En celular el alto sigue al bloque visible (lo fija el script), para no dejar espacio vacío */
+      .agenda.is-carousel { height: var(--agenda-h, auto); transition: height .6s cubic-bezier(.2, .7, .2, 1); }
+      .agenda.is-carousel .slot.is-prev { transform: translateX(-100%) scale(.9); }
+      .agenda.is-carousel .slot.is-next { transform: translateX(100%) scale(.9); }
+      .agenda-arrow { width: 38px; height: 38px; margin-top: -19px; }
+      .agenda-arrow--prev { left: calc(50% - var(--card-w) / 2 - 19px); }
+      .agenda-arrow--next { right: calc(50% - var(--card-w) / 2 - 19px); }
+      .abanico { left: 38%; width: 85vw; bottom: -18vw; }
+      .countdown div { min-width: 66px; }
+      .hero.is-loaded::after { background: linear-gradient(180deg, rgba(20, 80, 160, .3) 0%, rgba(20, 80, 160, .1) 100%); }
+    }
+  </style>
+</head>
+<body>
+
+  <!--
+    ==========================================================
+    CONFIGURACIÓN DEL EVENTO — editá estos valores
+    ==========================================================
+    1. En Luma, abrí tu evento → "Compartir" / "Embed" → "Botón de registro".
+       Copiá el ID del evento (empieza con "evt-...") y la URL pública (luma.com/xxxx).
+    2. Reemplazá LUMA_EVENT_ID y LUMA_EVENT_URL abajo.
+    3. EVENT_DATE controla la cuenta regresiva; después de EVENT_END los botones invitan a ver el evento en Luma.
+  -->
+  <script>
+    window.EVENT_CONFIG = {
+      LUMA_EVENT_ID: "evt-fwGFIEZD29UI0jp",
+      LUMA_EVENT_URL: "https://luma.com/event/evt-fwGFIEZD29UI0jp",
+      EVENT_DATE: "2026-12-03T08:30:00-03:00",
+      EVENT_END: "2026-12-03T14:30:00-03:00"
+    };
+  </script>
+
+  <header class="hero">
+    <!-- FONDO EN CAPAS: cielo, animación (en el medio) y frente sin cielo -->
+    <div class="hero-media" id="hero-media" aria-hidden="true">
+      <img class="hero-layer hero-sky" src="assets/hero/fondo-cielo.webp" alt="" decoding="async" fetchpriority="high">
+      <div class="hero-anim" id="hero-anim">
+        <canvas class="abanico" aria-label="Abanico de pétalos azules" role="img"></canvas>
+      </div>
+      <img class="hero-layer hero-front" src="assets/hero/fondo-frente.webp" alt="" decoding="async" fetchpriority="high">
+    </div>
+
+    <div class="container hero-inner">
+      <!-- LOGOS institucionales (PNG blancos en assets/logos, se tiñen con el color del texto) -->
+      <div class="partners" aria-label="Organizan">
+        <div class="partner"><img class="partner-logo" src="assets/logos/rio-cuarto-vos.png" alt="Río Cuarto Gobierno · Vos, Primero estás vos" style="--h: 40px"></div>
+        <div class="partner"><img class="partner-logo" src="assets/logos/cordoba-provincia.png" alt="Ministerio Jefatura de Gabinete · Córdoba, Gobierno de la Provincia · Hacer para crecer" style="--h: 49px"></div>
+      </div>
+
+      <div class="hero-copy">
+        <h1><span>GESTIONAR</span> <strong>CON DATOS</strong></h1>
+        <p class="lema" id="lema">De la intuición a la evidencia</p>
+        <p class="city"><strong>RÍO CUARTO</strong> <span>2026</span></p>
+        <p class="tagline">
+          <span>Jornada provincial de</span>
+          <strong>Transparencia y gestión basada en evidencia</strong>
+        </p>
+
+        <div class="meta">
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+            Jueves 3 de diciembre, 2026
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            08:30 – 14:30 hs
+          </div>
+          <div>
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Polo Científico Tecnológico, Río Cuarto
+          </div>
+        </div>
+
+        <div class="cta-row">
+          <a class="btn luma-btn" data-luma-action="checkout">Reservar mi lugar</a>
+          <a href="#agenda" class="btn btn-ghost">Ver agenda</a>
+        </div>
+
+        <div class="countdown" id="countdown" aria-label="Cuenta regresiva a la jornada">
+          <div><strong id="cd-d">--</strong><span>Días</span></div>
+          <div><strong id="cd-h">--</strong><span>Horas</span></div>
+          <div><strong id="cd-m">--</strong><span>Min</span></div>
+          <div><strong id="cd-s">--</strong><span>Seg</span></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section id="sobre">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">La jornada</span>
+        <h2>Datos al servicio de <b>mejores decisiones públicas</b></h2>
+        <p>Un espacio de encuentro e intercambio institucional para avanzar desde la gestión de datos hacia los datos para la gestión, impulsando la transparencia, la innovación y la cocreación de valor público.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card">
+          <div class="num">01</div>
+          <h3>Transparencia</h3>
+          <p>Experiencias de gobierno abierto, datos públicos y rendición de cuentas que fortalecen la confianza ciudadana.</p>
+        </div>
+        <div class="card">
+          <div class="num">02</div>
+          <h3>Gestión basada en evidencia</h3>
+          <p>Cómo medir, evaluar y usar datos para diseñar políticas públicas más efectivas en municipios y provincia.</p>
+        </div>
+        <div class="card">
+          <div class="num">03</div>
+          <h3>Comunidad y redes</h3>
+          <p>Un espacio de encuentro entre gobiernos locales, academia, sector productivo y organizaciones de la sociedad civil.</p>
+        </div>
+      </div>
+      <div class="stats">
+        <div><strong>+100</strong><span>Participantes</span></div>
+        <div><strong>5</strong><span>Paneles</span></div>
+        <div><strong>1</strong><span>Laboratorio de datos</span></div>
+        <div><strong>1</strong><span>Jornada</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="agenda" class="alt">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Agenda</span>
+        <h2>Programa de la jornada</h2>
+        <p>Cronograma del jueves 3 de diciembre.</p>
+      </div>
+      <div class="agenda-carousel">
+        <button class="agenda-arrow agenda-arrow--prev" type="button" aria-label="Bloque anterior" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="agenda">
+        <div class="slot"><time>08:30</time><div><h3>Acreditación</h3><p>Recepción de participantes.</p></div></div>
+        <div class="slot"><time>09:00</time><div><h3>Apertura <span class="tag">15 min</span></h3><p>Palabras de apertura de la jornada.</p>
+          <ul class="speakers">
+            <li><strong>Guillermo De Rivas</strong> · Intendente de la Ciudad de Río Cuarto</li>
+            <li><strong>Manuel Calvo</strong> · Ministro Jefe de Gabinete de la Provincia de Córdoba</li>
+          </ul></div></div>
+        <div class="slot"><time>09:20</time><div><h3>Bloque inicial: «De producir datos a gobernar con evidencia» <span class="tag">30 min</span></h3>
+          <p>El caso de Río Cuarto y su proceso para incorporar datos y evidencia a la gestión: el modelo de gobernanza de datos y su marco normativo, el Observatorio para el análisis y seguimiento de la gestión, y el plan de gestión con los avances del repositorio único de datos, como partes de una misma estrategia y con los desafíos que aún enfrenta el municipio.</p>
+          <p class="by">Municipalidad de Río Cuarto</p>
+          <ul class="speakers">
+            <li><strong>Karin Bogni</strong> · Secretaria de Gestión y Participación Ciudadana</li>
+            <li><strong>Mónica Anelo</strong> · Directora de Estadística, Control de Calidad y Procesos</li>
+            <li><strong>Pablo Fabbroni</strong> · Equipo Técnico de la Dirección de Estadística, Control de Calidad y Procesos</li>
+          </ul></div></div>
+        <div class="slot"><time>10:00</time><div><h3>Bloque 1: «Nuestra historia en datos» <span class="tag">30 min</span></h3>
+          <p>Cómo Luján de Cuyo conecta su Plan de Gestión 2023–2027 con metas públicas y seguimiento, gobernanza de datos e inteligencia artificial aplicada al mantenimiento urbano.</p>
+          <p class="by">Municipalidad de Luján de Cuyo</p>
+          <ul class="speakers"><li><strong>Esteban Allasino</strong> · Intendente de Luján de Cuyo</li></ul></div></div>
+        <div class="slot"><time>10:30</time><div><h3>Bloque 2 <span class="tag">30 min</span></h3>
+          <p class="by">Universidad Nacional de Río Cuarto</p></div></div>
+        <div class="slot"><time>11:00</time><div><h3>Bloque 3: «De la institucionalización a la evidencia de impacto» <span class="tag">30 min</span></h3>
+          <p>La experiencia de Jesús María en un modelo de gestión basado en evidencia, fortalecido por la certificación What Works Cities y los estándares de Ciudad Líder de RIL, con casos en salud pública y gestión territorial.</p>
+          <p class="by">Municipalidad de Jesús María</p>
+          <ul class="speakers">
+            <li><strong>Marianela Piazzano</strong> · Secretaria de Coordinación de Gestión y Planificación Estratégica</li>
+            <li><strong>Marcelo Salcedo</strong> · Dirección de Innovación y Modernización</li>
+            <li><strong>Fabiana Adaro</strong> · Equipo Técnico de Innovación y Modernización</li>
+          </ul></div></div>
+        <div class="slot"><time>11:30</time><div><h3>Bloque 4 <span class="tag">30 min</span> <span class="tag tag--pending">A confirmar</span></h3></div></div>
+        <div class="slot"><time>12:00</time><div><h3>Coffee break</h3><p>Pausa y espacio de encuentro entre participantes.</p></div></div>
+        <div class="slot"><time>12:30</time><div><h3>Laboratorio de datos: «Datos e ideas para construir valor público» <span class="tag">120 min</span> <span class="tag">Taller participativo</span></h3>
+          <p>Un taller en mesas de trabajo donde agentes municipales, universidades, sector productivo y organizaciones de la sociedad civil identifican necesidades de información, las contrastan con los datos que produce la Municipalidad de Río Cuarto y priorizan colectivamente una propuesta para una agenda de apertura y aprovechamiento de datos públicos.</p>
+          <p class="by">Universidad Provincial de Córdoba</p>
+          <ul class="speakers">
+            <li><strong>Dr. Julio Romero</strong> · Coordinación</li>
+            <li><strong>Mgter. Mónica Eula</strong> · Colaboradora</li>
+            <li><strong>Dr. Santiago Martínez Luque</strong> · Colaborador</li>
+            <li><strong>Esp. Oscar Ballete</strong> · Colaborador</li>
+          </ul></div></div>
+      </div>
+        <button class="agenda-arrow agenda-arrow--next" type="button" aria-label="Bloque siguiente" hidden><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
+      </div>
+      <div class="agenda-dots" aria-label="Horarios de la agenda"></div>
+    </div>
+  </section>
+
+  <section id="expositores">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Expositores</span>
+        <h2>Quiénes nos acompañan</h2>
+        <p>Pronto anunciaremos la lista completa de expositores.</p>
+      </div>
+      <div class="grid grid-3">
+        <div class="card speaker">
+          <div class="logo-reel" role="group" aria-label="Municipios participantes">
+            <img src="assets/logos/municipios/rio-cuarto.png" alt="Municipalidad de Río Cuarto" class="is-active">
+            <img src="assets/logos/municipios/jesus-maria.png" alt="Municipalidad de Jesús María">
+            <img src="assets/logos/municipios/lujan-de-cuyo.png" alt="Municipalidad de Luján de Cuyo">
+          </div>
+          <div class="logo-reel-dots"></div>
+          <h3>Municipios</h3><p class="role">Gobiernos locales</p><p>Experiencias de gestión, transparencia y datos abiertos en gobiernos locales.</p></div>
+        <div class="card speaker">
+          <div class="logo-reel" role="group" aria-label="Universidades participantes">
+            <img src="assets/logos/universidades/unrc.png" alt="Universidad Nacional de Río Cuarto" class="is-active">
+            <img src="assets/logos/universidades/upc.png" alt="Universidad Provincial de Córdoba">
+          </div>
+          <div class="logo-reel-dots"></div>
+          <h3>Universidades</h3><p class="role">Academia</p><p>Investigación y evidencia para el diseño y la evaluación de políticas públicas.</p></div>
+        <div class="card speaker">
+          <div class="logo-reel logo-reel--wide" role="group" aria-label="Clústeres participantes">
+            <img src="assets/logos/clusteres/cluster-tec.png" alt="ClusterTec" class="is-active">
+            <img src="assets/logos/clusteres/polo-cientifico-tecnologico.png" alt="Polo Científico Tecnológico Río Cuarto">
+          </div>
+          <div class="logo-reel-dots"></div>
+          <h3>Clústeres</h3><p class="role">Sector productivo</p><p>Articulación público-privada e innovación basada en datos.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="lugar" class="alt">
+    <div class="container">
+      <div class="section-head">
+        <span class="eyebrow">Lugar</span>
+        <h2>Cómo llegar</h2>
+      </div>
+      <div class="location">
+        <div class="card">
+          <h3>Polo Científico Tecnológico</h3>
+          <dl>
+            <dt>Dirección</dt><dd>Andrés Dadone 875, Río Cuarto, Córdoba</dd>
+            <dt>Fecha</dt><dd>Jueves 3 de diciembre, 2026</dd>
+            <dt>Horario</dt><dd>08:30 a 14:30 hs</dd>
+            <dt>Inscripción</dt><dd>Con registro previo en Luma</dd>
+            <dt>Organiza</dt><dd>Dirección de Estadística, Control de Calidad y Procesos</dd>
+          </dl>
+          <div style="margin-top:30px"><a class="btn btn-primary luma-btn" data-luma-action="checkout">Reservar mi lugar</a></div>
+        </div>
+        <iframe title="Mapa: Polo Científico Tecnológico, Río Cuarto" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+          src="https://www.google.com/maps?q=Andr%C3%A9s+Dadone+875,+X5806+R%C3%ADo+Cuarto,+C%C3%B3rdoba,+Argentina&output=embed"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <section id="faq">
+    <div class="container">
+      <div class="section-head center">
+        <span class="eyebrow">Preguntas frecuentes</span>
+        <h2>FAQ</h2>
+      </div>
+      <div class="faq">
+        <details><summary>¿Cómo me inscribo?</summary><p>Con el botón «Reservar mi lugar»: se abre el formulario de Luma, donde completás tus datos y recibís la confirmación por email.</p></details>
+        <details><summary>¿A quién está dirigida?</summary><p>A agentes y funcionarios municipales, equipos técnicos, referentes de gobiernos locales, academia, sector productivo y organizaciones de la sociedad civil interesados en la gobernanza y el uso estratégico de datos.</p></details>
+        <details><summary>¿Dónde se realiza?</summary><p>En el Polo Científico Tecnológico, Andrés Dadone 875, Río Cuarto, Córdoba. La acreditación comienza a las 08:30.</p></details>
+        <details><summary>¿Cómo cancelo mi inscripción?</summary><p>Desde el email de confirmación de Luma o desde tu cuenta en luma.com.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="container">
+      <div class="final">
+        <h2>Sumate a Gestionar con Datos 2026</h2>
+        <p>Inscribite y recibí todas las novedades de la jornada.</p>
+        <a class="btn luma-btn" data-luma-action="checkout">Reservar mi lugar</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <!-- LOGOS institucionales -->
+      <div class="partners" aria-label="Organizan">
+        <div class="partner"><img class="partner-logo" src="assets/logos/rio-cuarto-vos.png" alt="Río Cuarto Gobierno · Vos, Primero estás vos" style="--h: 40px"></div>
+        <div class="partner"><img class="partner-logo" src="assets/logos/cordoba-provincia.png" alt="Ministerio Jefatura de Gabinete · Córdoba, Gobierno de la Provincia · Hacer para crecer" style="--h: 49px"></div>
+      </div>
+      <span class="copy">© 2026 Gestionar con Datos · Río Cuarto · Inscripciones vía <a href="https://luma.com" target="_blank" rel="noopener">Luma</a></span>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var cfg = window.EVENT_CONFIG;
+
+      // Configura todos los botones de inscripción con el evento de Luma.
+      // Si el script de Luma no carga, el enlace abre la página del evento en una pestaña nueva.
+      document.querySelectorAll(".luma-btn").forEach(function (btn) {
+        btn.href = cfg.LUMA_EVENT_URL;
+        btn.target = "_blank";
+        btn.rel = "noopener";
+        btn.classList.add("luma-checkout--button");
+        btn.setAttribute("data-luma-event-id", cfg.LUMA_EVENT_ID);
+      });
+
+      // Carga el script oficial de Luma (abre la inscripción en un modal sobre la página).
+      var s = document.createElement("script");
+      s.id = "luma-checkout";
+      s.src = "https://embed.lu.ma/checkout-button.js";
+      document.body.appendChild(s);
+
+      // En pantallas de escritorio bajas, achica el formulario de Luma en proporción para que entre completo
+      // (su contenido mide unos 520 × 860 px). En celular se deja a tamaño real, con desplazamiento.
+      var LUMA_W = 520, LUMA_H = 880, MIN_SCALE = 0.7;
+      function fitLuma() {
+        var modal = document.querySelector(".luma-checkout--modal");
+        var frame = modal && modal.querySelector("iframe");
+        if (!frame) return;
+        var scale = (window.innerHeight - 96) / LUMA_H;
+        if (window.innerWidth >= 600 && scale < 1) {
+          scale = Math.max(MIN_SCALE, scale);
+          modal.style.setProperty("width", LUMA_W * scale + "px", "important");
+          modal.style.setProperty("height", LUMA_H * scale + "px", "important");
+          frame.style.cssText = "border:0;width:" + LUMA_W + "px;height:" + LUMA_H + "px;transform:scale(" + scale + ");transform-origin:0 0";
+        } else {
+          modal.style.removeProperty("width");
+          modal.style.removeProperty("height");
+          frame.style.cssText = "border:0;width:100%;height:100%";
+        }
+      }
+      new MutationObserver(fitLuma).observe(document.body, { childList: true });
+      window.addEventListener("resize", fitLuma);
+
+      // Marca el hero como cargado cuando las capas de fondo (.hero-layer: img o video) están listas.
+      // Para otros componentes animados (Lottie, canvas, etc.) llamá a window.heroLoaded() al terminar de cargar.
+      var hero = document.querySelector(".hero");
+      window.heroLoaded = function () {
+        if (hero.classList.contains("is-loaded")) return;
+        hero.classList.add("is-loaded");
+        document.dispatchEvent(new Event("hero:loaded"));
+      };
+      var media = hero.querySelectorAll(".hero-layer");
+      var pending = media.length;
+      function done() { if (--pending <= 0) window.heroLoaded(); }
+      media.forEach(function (m) {
+        var ready = m.tagName === "IMG" ? m.complete && m.naturalWidth > 0 : m.readyState >= 2;
+        if (ready) done();
+        else m.addEventListener(m.tagName === "IMG" ? "load" : "loadeddata", done, { once: true });
+      });
+
+      // Ajusta el tamaño del lema para que mida exactamente lo mismo que "CON DATOS"
+      var lema = document.getElementById("lema");
+      var conDatos = document.querySelector(".hero h1 strong");
+      function fitLema() {
+        var base = 20;
+        lema.style.fontSize = base + "px";
+        lema.style.fontSize = (base * conDatos.getBoundingClientRect().width / lema.getBoundingClientRect().width) + "px";
+      }
+      fitLema();
+      if (document.fonts) document.fonts.ready.then(fitLema);
+      window.addEventListener("resize", fitLema);
+
+      // Rotador animado: muestra un elemento por vez con fundido desenfocado, barras de progreso clicables,
+      // arranca al verse en pantalla y se pausa con el mouse encima. Lo usan los logos de expositores y la agenda.
+      var REDUCED_MOTION = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      function rotator(opts) {
+        var items = opts.items, dotsBox = opts.dots, interval = opts.interval;
+        var current = 0, timer = null, started = false, paused = false;
+        dotsBox.style.setProperty("--reel-interval", interval + "ms");
+        items[0].classList.add("is-active");
+
+        var dots = items.map(function (item, i) {
+          var b = document.createElement("button");
+          b.type = "button";
+          b.setAttribute("aria-label", "Ver " + opts.label(item));
+          if (opts.dotText) b.textContent = opts.dotText(item);
+          b.addEventListener("click", function () { show(i); restart(); });
+          dotsBox.appendChild(b);
+          return b;
+        });
+
+        function show(i) {
+          if (i === current) return;
+          var leaving = items[current];
+          leaving.classList.remove("is-active");
+          leaving.classList.add("is-leaving");
+          setTimeout(function () { leaving.classList.remove("is-leaving"); }, 900);
+          items[i].classList.add("is-active");
+          current = i;
+          paintDots();
+          if (opts.onChange) opts.onChange(current);
+        }
+        function paintDots() {
+          dots.forEach(function (d, i) {
+            d.classList.remove("is-active", "is-done");
+            void d.offsetWidth; // reinicia la barra de progreso
+            if (i < current) d.classList.add("is-done");
+            if (i === current) d.classList.add("is-active");
+          });
+        }
+        function next() { show((current + 1) % items.length); }
+        function restart() { clearInterval(timer); if (!paused) timer = setInterval(next, interval); }
+
+        opts.hover.addEventListener("mouseenter", function () { paused = true; dotsBox.classList.add("is-paused"); clearInterval(timer); });
+        opts.hover.addEventListener("mouseleave", function () { paused = false; dotsBox.classList.remove("is-paused"); if (started) { paintDots(); restart(); } });
+
+        var io = new IntersectionObserver(function (entries) {
+          if (!entries[0].isIntersecting || started) return;
+          started = true;
+          io.disconnect();
+          setTimeout(function () { paintDots(); restart(); }, opts.delay || 0);
+        }, { threshold: .4 });
+        io.observe(opts.stage);
+
+        if (opts.onChange) opts.onChange(current);
+        var n = items.length;
+        return {
+          go: function (i) { show((i + n) % n); restart(); },
+          prev: function () { show((current - 1 + n) % n); restart(); },
+          next: function () { show((current + 1) % n); restart(); }
+        };
+      }
+
+      if (!REDUCED_MOTION) {
+        // Logos de expositores: las tarjetas arrancan escalonadas para que no cambien todas a la vez
+        var reels = document.querySelectorAll(".logo-reel");
+        reels.forEach(function (reel, i) {
+          rotator({
+            stage: reel, hover: reel.closest(".card"), dots: reel.nextElementSibling,
+            items: Array.prototype.slice.call(reel.querySelectorAll("img")),
+            interval: 3000, delay: i * 3000 / reels.length,
+            label: function (img) { return img.alt; }
+          });
+        });
+
+        // Agenda: tarjeta central con las vecinas asomando a los costados, flechas y línea de horarios
+        var agenda = document.querySelector(".agenda");
+        var carousel = agenda.closest(".agenda-carousel");
+        var slots = Array.prototype.slice.call(agenda.querySelectorAll(".slot"));
+        // Se arma sin transición, para que los bloques no se vean superpuestos al pasar de lista a carrusel
+        agenda.classList.add("is-carousel", "is-instant");
+        requestAnimationFrame(function () { requestAnimationFrame(function () { agenda.classList.remove("is-instant"); }); });
+        var activeSlot, narrow = window.matchMedia("(max-width: 860px)");
+        var agendaNav = rotator({
+          stage: agenda, hover: agenda.closest(".container"), dots: document.querySelector(".agenda-dots"),
+          items: slots, interval: 7000,
+          label: function (slot) { return slot.querySelector("time").textContent + " · " + slot.querySelector("h3").firstChild.textContent.trim(); },
+          dotText: function (slot) { return slot.querySelector("time").textContent; },
+          onChange: function (cur) {
+            var n = slots.length;
+            activeSlot = slots[cur];
+            slots.forEach(function (s, i) {
+              s.classList.toggle("is-prev", i === (cur - 1 + n) % n);
+              s.classList.toggle("is-next", i === (cur + 1) % n);
+              s.setAttribute("aria-hidden", i === cur ? "false" : "true");
+            });
+            fitAgendaHeight();
+          }
+        });
+        // En celular, el alto del carrusel sigue al bloque visible
+        function fitAgendaHeight() {
+          if (!activeSlot) return;
+          if (narrow.matches) agenda.style.setProperty("--agenda-h", activeSlot.offsetHeight + "px");
+          else agenda.style.removeProperty("--agenda-h");
+        }
+        window.addEventListener("resize", fitAgendaHeight);
+        if (document.fonts) document.fonts.ready.then(fitAgendaHeight);
+        // Clic en una tarjeta lateral la trae al centro
+        slots.forEach(function (s) {
+          s.addEventListener("click", function () {
+            if (s.classList.contains("is-prev")) agendaNav.prev();
+            else if (s.classList.contains("is-next")) agendaNav.next();
+          });
+        });
+        carousel.querySelector(".agenda-arrow--prev").addEventListener("click", agendaNav.prev);
+        carousel.querySelector(".agenda-arrow--next").addEventListener("click", agendaNav.next);
+        carousel.querySelectorAll(".agenda-arrow").forEach(function (b) { b.hidden = false; });
+        // Flechas del teclado cuando el foco está en el carrusel
+        carousel.addEventListener("keydown", function (e) {
+          if (e.key === "ArrowLeft") agendaNav.prev();
+          if (e.key === "ArrowRight") agendaNav.next();
+        });
+      }
+
+      // Cuenta regresiva
+      var target = new Date(cfg.EVENT_DATE).getTime();
+      var el = {
+        d: document.getElementById("cd-d"),
+        h: document.getElementById("cd-h"),
+        m: document.getElementById("cd-m"),
+        s: document.getElementById("cd-s")
+      };
+      function pad(n) { return String(n).padStart(2, "0"); }
+      function tick() {
+        var diff = Math.max(0, target - Date.now());
+        el.d.textContent = Math.floor(diff / 86400000);
+        el.h.textContent = pad(Math.floor(diff / 3600000) % 24);
+        el.m.textContent = pad(Math.floor(diff / 60000) % 60);
+        el.s.textContent = pad(Math.floor(diff / 1000) % 60);
+        if (diff === 0) document.getElementById("countdown").style.display = "none";
+        if (Date.now() > new Date(cfg.EVENT_END).getTime()) {
+          document.querySelectorAll(".luma-btn").forEach(function (b) { b.textContent = "Ver el evento en Luma"; });
+        }
+      }
+      tick();
+      setInterval(tick, 1000);
+    })();
+  </script>
+  <script src="assets/hero/abanico.js"></script>
+</body>
+</html>
